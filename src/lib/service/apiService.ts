@@ -5,7 +5,17 @@ type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 interface RequestOptions {
   method?: RequestMethod;
-  body?: any;
+  body?: Record<string, unknown>; // Replacing any with a specific type for the request body
+}
+
+interface ApiResponseMeta {
+  message: string;
+}
+
+interface ApiResponseData {
+  response?: {
+    meta?: ApiResponseMeta;
+  };
 }
 
 async function makeApiCallService(
@@ -24,30 +34,30 @@ async function makeApiCallService(
     });
 
     if (!response.ok) {
-      const res = await response.json();
+      const res: ApiResponseData = await response.json();
       toast({
         variant: "destructive",
         title: "Error",
-        description: res?.response?.meta?.message,
+        description: res.response?.meta?.message || "An error occurred.",
       });
       return null;
     }
 
-    const data: any = await response.json();
+    const data: ApiResponseData = await response.json();
     if (response.ok) {
       toast({
         variant: "default",
         title: "Success",
-        description: data?.response?.meta?.message,
+        description: data.response?.meta?.message || "Request was successful.",
       });
     }
 
-    return data;
+    return data as unknown as IResponse;
   } catch (error) {
     toast({
       title: "API Service error",
       description: `An error occurred while making the API call: ${
-        ((error as unknown) as any)?.message
+        (error as Error)?.message || "Unknown error"
       }`,
     });
 

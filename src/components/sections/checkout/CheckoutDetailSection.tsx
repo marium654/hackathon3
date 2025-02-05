@@ -1,17 +1,12 @@
 "use client";
 
-import MainButton from "@/components/common/MainButton";
 import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/components/ui/use-toast";
-import makeApiCallService from "@/lib/service/apiService";
 import { cartAtom } from "@/lib/storage/jotai";
 import { useAtomValue } from "jotai";
-import { useState } from "react";
+import CheckoutButton from "../payment/paymentBtn";
 
 function CheckoutDetailSection() {
-  const [loading, setLoading] = useState(false);
   const products = useAtomValue(cartAtom);
-  const { toast } = useToast();
 
   const computeSubTotal = () => {
     let total = 0;
@@ -21,43 +16,10 @@ function CheckoutDetailSection() {
     return total;
   };
 
-  const handleCheckout = async () => {
-    if (!true) {
-      toast({
-        variant: "destructive",
-        title: "Empty Billing Info",
-        description: "Kindly fill your billing information",
-      });
-
-      return;
-    }
-    setLoading(true);
-    await makeApiCallService("/api/payment", {
-      method: "POST",
-      body: {
-        products: products.map((product) => {
-          return {
-            id: product._id,
-            qty: product.quantity,
-          };
-        }),
-      },
-    })
-      .then((res) => {
-        if (typeof window !== undefined) {
-          if (res?.response?.data?.url) {
-            window.location = res?.response?.data?.url;
-          }
-        }
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  };
+  const totalPrice = computeSubTotal();
 
   return (
-    <section>
+    <section className="w-1/2">
       <div className="flex justify-between">
         <p className="font-bold text-[18px]">Product</p>
         <p className="font-bold text-[18px]">Subtotal</p>
@@ -70,7 +32,7 @@ function CheckoutDetailSection() {
               {product.title}{" "}
               <span className="font-bold text-black">X {product.quantity}</span>
             </p>
-            <p>{Number(product.price) * Number(product.quantity)}</p>
+            <p>{Number(product.price) + " x " + Number(product.quantity)} = ${Number(product.price) * Number(product.quantity)}</p>
           </div>
         ))}
       </div>
@@ -78,9 +40,7 @@ function CheckoutDetailSection() {
       <div className="mt-4 flex flex-col gap-3 justify-between">
         <div className="flex justify-between">
           <p className="text-customGray2 text-sm ">Total</p>
-          <p className="text-primary font-bold text-[20px]">
-            Rs. {computeSubTotal()}
-          </p>
+          <p className="text-primary font-bold text-[20px]">${totalPrice}</p>
         </div>
       </div>
 
@@ -95,11 +55,13 @@ function CheckoutDetailSection() {
       </p>
 
       <div className="my-16 flex justify-center">
-        <MainButton
-          text="Place order"
-          classes="bg-white hover:bg-white border  border-black rounded-[15px] h-[55px] text-black"
-          isLoading={loading}
-          action={handleCheckout}
+        <CheckoutButton
+          products={products.map((item) => ({
+            name: item.title,
+            price: item.price,
+            quantity: item.quantity,
+          }))}
+          totalPrice={totalPrice}
         />
       </div>
     </section>

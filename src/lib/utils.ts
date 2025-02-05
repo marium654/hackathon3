@@ -19,8 +19,8 @@ export const handleError = (error: unknown) => {
 }
 
 
-export const successResponse = (
-  data: any,
+export const successResponse = <T>(
+  data: T,
   message: string = "Success",
   code = 200
 ) => {
@@ -34,10 +34,10 @@ export const successResponse = (
   return NextResponse.json({ response }, { status: code });
 };
 
-export const errorResponse = (
+export const errorResponse = <T>(
   message: string = "Error",
   code = 400,
-  data: any = null
+  data: T = null as unknown as T
 ) => {
   const response = {
     meta: {

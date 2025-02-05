@@ -31,12 +31,14 @@ export default function CartTotals() {
               <p className="text-sm text-myBlack">{item.title}</p>
               <p className="text-[#9F9F9F] font-medium text-sm">
                 Rs: {item.price.toLocaleString()} X {item.quantity}
+                ${item.price.toLocaleString()} X {item.quantity}
               </p>
             </div>
           ))}
           <div className="flex items-center justify-between mt-2 pt-3 border-t border-myOrange">
             <p className="text-myBlack">Total:</p>
             <p className="text-myOrange">Rs: {calculateTotal().toLocaleString()}</p>
+            <p className="text-myOrange">${calculateTotal().toLocaleString()}</p>
           </div>
         </div>
       </div>

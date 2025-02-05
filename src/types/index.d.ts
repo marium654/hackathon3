@@ -29,7 +29,7 @@ export interface ImportedData {
 
 interface IResponse {
   response: {
-    data: any;
+    data: T;
   };
 }
 

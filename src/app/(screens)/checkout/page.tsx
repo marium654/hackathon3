@@ -10,6 +10,7 @@ export default function CheckoutPage() {
       <Hero title="Checkout" />
       <div className="mx-4 md:mx-[130px] flex gap-8 flex-col md:flex-row mt-[98px]">
         <CheckoutBillingForm />
+        <div className="mx-4 md:mx-[130px] flex justify-center gap-8 flex-col md:flex-row mt-[98px]"></div>
         <CheckoutDetailSection />
       </div>
       <ShopBannerSection />

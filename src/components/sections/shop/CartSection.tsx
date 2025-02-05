@@ -7,7 +7,7 @@ import { useAtom } from "jotai";
 import { useRouter } from "next-nprogress-bar";
 import Image from "next/image";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 
 export default function CartSection({
   toggleShowCart,
@@ -25,20 +25,21 @@ export default function CartSection({
     setProducts(filteredProducts);
   };
 
-  const computeSubTotal = () => {
+  // Memoize computeSubTotal to avoid unnecessary re-creations
+  const computeSubTotal = useCallback(() => {
     let total = 0;
     for (const product of products) {
       total += product.quantity * product.price;
     }
     setSubTotal(total);
-  };
+  }, [products]); // Add products as a dependency since it affects the computation
 
   useEffect(() => {
     computeSubTotal();
-  }, [products]);
+  }, [computeSubTotal]); // Add computeSubTotal as a dependency
 
   return (
-    <div className="w-[417px] h-[746px] bg-white p-[30px] flex justify-between flex-col">
+    <div className="w-[417px] h-screen overflow-y-auto bg-white p-[30px] flex justify-between flex-col">
       <div>
         <div className="flex justify-between items-center mb-[36px]">
           <p className="font-semibold text-[24px]">Shopping Cart</p>
@@ -68,7 +69,7 @@ export default function CartSection({
                 <p>
                   {product.quantity} X{" "}
                   <span className="text-primary font-medium text-sm">
-                    Rs. {product.price}
+                    ${product.price}
                   </span>
                 </p>
               </div>
@@ -84,16 +85,16 @@ export default function CartSection({
 
           {products.length === 0 && (
             <div className="flex justify-center mt-8 text-gray-400">
-              No product is cart
+              No product in cart
             </div>
           )}
         </div>
       </div>
       <div>
-        <div className="flex justify-between mb-[23px]">
+        <div className="flex justify-between my-[23px]">
           <p>Subtotal</p>
           <p className="text-primary text-normal font-semibold">
-            Rs. {subTotal}
+            ${subTotal}
           </p>
         </div>
         {subTotal ? (
